@@ -14,8 +14,8 @@ Category.init(
       primaryKey: true, 
       autoIncrement: true
     },
-    //product column
-    product: {
+    //category column
+    category_name: {
       type: DataTypes.STRING,
       allowNull: false
     },
