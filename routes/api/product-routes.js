@@ -14,7 +14,20 @@ const ERR_MESSAGES = {
 router.get('/', async (req, res) => {
   // find all products
   try {
-    const product = await Product.findAll();
+    const product = await Product.findAll({
+      include: [
+        {
+          model: Category,
+          attributes: ['id', 'category_name']
+        },
+        {
+          model: Tag,
+          attributes: ['id', 'tag_name'],
+          through: ProductTag,
+          as: 'product_tags'
+        }
+      ]
+    });
     res.status(200).json(product)
   } catch (err) {
     console.error(err);
@@ -33,7 +46,20 @@ router.get('/:id', async (req, res) => {
   
   // find a single product by its `id`
   try {
-    const product = await findProdById(req.params.id);    
+    const product = await findProdById(id, {
+      include: [
+        {
+          model: Category,
+          attributes: ['id', 'category_name']
+        },
+        {
+          model: Tag,
+          attributes: ['id', 'tag_name'],
+          through: ProductTag,
+          as: 'product_tags'
+        }
+      ]
+    });    
     res.status(200).json(product)
   } catch (err) {
     console.error(err);
@@ -97,7 +123,7 @@ router.put('/:id', (req, res) => {
       id: req.params.id,
     },
   })
-    .then((product) => {
+    .then(() => {
       // find all associated tags from ProductTag
       return ProductTag.findAll({ where: { product_id: req.params.id } });
     })
@@ -131,8 +157,28 @@ router.put('/:id', (req, res) => {
     });
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
+  //validate id
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) {
+    return res.status(400).send(ERR_MESSAGES.INVALID);
+  }
+
   // delete one product by its `id` value
+  try {
+    const category = await Product.destroy({
+      where: {
+        id: req.params.id
+      }
+    });
+    //validate if the category exists
+    if (!category) {
+      res.status(404).send(ERR_MESSAGES.CATEGORY_404)
+    }
+    res.status(200).json({message: 'Category successfully deleted.'});
+  } catch (err) {
+    res.status(400).json(err);
+  }
 });
 
 module.exports = router;
