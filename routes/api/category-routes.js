@@ -31,7 +31,7 @@ router.get('/:id', async (req, res) => {
 
   // find one category by its `id` value
   try {
-    const category = await findCatById(req.params.id);    
+    const category = await findCatById(id);    
     res.status(200).json(category)
   } catch (err) {
     console.error(err);
@@ -44,7 +44,12 @@ router.get('/:id', async (req, res) => {
 async function findCatById (id) {
   const category = await Category.findByPk(id, {
     //join with categories
-    include: [{model: Product, as: 'category_products'}]
+    include: [
+      {
+        model: Product, 
+        attributes: ['id', 'product_name']
+      }
+    ]
   });
   //validate if the category exists
   if (!category) {
