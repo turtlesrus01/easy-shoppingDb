@@ -1,19 +1,61 @@
 const router = require('express').Router();
 const { Product, Category, Tag, ProductTag } = require('../../models');
 
+//error messages
+const ERR_MESSAGES = {
+  FIND_ERROR: 'Error finding product',
+  PRODUCT_404: 'Product not found.',
+  INVALID: 'Invalid product id.'
+};
+
 // The `/api/products` endpoint
 
 // get all products
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   // find all products
+  try {
+    const product = await Product.findAll();
+    res.status(200).json(product)
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(ERR_MESSAGES.FIND_ERROR);
+  }
   // be sure to include its associated Category and Tag data
 });
 
 // get one product
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
+  //validate id
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) {
+    return res.status(400).send(ERR_MESSAGES.INVALID);
+  }
+  
   // find a single product by its `id`
+  try {
+    const product = await findProdById(req.params.id);    
+    res.status(200).json(product)
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({message: ERR_MESSAGES.FIND_ERROR});
+  }
+
   // be sure to include its associated Category and Tag data
 });
+
+//function to carry out db query
+async function findProdById (id) {
+  const product = await Product.findByPk(id, {
+    //join with categories
+    include: [{model: Product, as: 'category_products'}]
+  });
+
+  if (!product) {
+    throw new Error(ERR_MESSAGES.CATEGORY_404);
+  }
+
+  return product;
+}
 
 // create new product
 router.post('/', (req, res) => {

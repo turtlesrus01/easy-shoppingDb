@@ -10,7 +10,7 @@ const ERR_MESSAGES = {
 
 // The `/api/categories` endpoint
 
-router.get('/', async(req, res) => {
+router.get('/', async (req, res) => {
   // find all categories
   try {
     const categories = await Category.findAll();
@@ -46,7 +46,7 @@ async function findCatById (id) {
     //join with categories
     include: [{model: Product, as: 'category_products'}]
   });
-
+  //validate if the category exists
   if (!category) {
     throw new Error(ERR_MESSAGES.CATEGORY_404);
   }
@@ -57,8 +57,12 @@ async function findCatById (id) {
 router.post('/', async (req, res) => {
   // create a new category
   try {
-    const categoryData = await Category.create(req.body);
-    res.status(200).json(categoryData);
+    const category = await Category.create(req.body);
+    //validate if the category exists
+    if (!category) {
+      throw new Error(ERR_MESSAGES.CATEGORY_404);
+    }
+    res.status(200).json(category);
   } catch (err) {
     res.status(400).json(err);
   }
@@ -72,16 +76,16 @@ router.put('/:id', async (req, res) => {
   }
   // update a category by its `id` value
   try {
-    const categoryData = await Category.update({
+    const category = await Category.update(req.body, {
       where: {
         id: req.params.id
       }
     });
-
-    if (!categoryData) {
+    //validate if the category exists
+    if (!category) {
       res.status(404).send(ERR_MESSAGES.CATEGORY_404)
     }
-    res.status(200).json(categoryData);
+    res.status(200).json(category);
   } catch (err) {
     res.status(400).json(err);
   }
@@ -96,16 +100,16 @@ router.delete('/:id', async (req, res) => {
 
   // delete a category by its `id` value
   try {
-    const categoryData = await Category.destroy({
+    const category = await Category.destroy({
       where: {
         id: req.params.id
       }
     });
-
-    if (!categoryData) {
+    //validate if the category exists
+    if (!category) {
       res.status(404).send(ERR_MESSAGES.CATEGORY_404)
     }
-    res.status(200).json(categoryData);
+    res.status(200).json({message: 'Category successfully deleted.'});
   } catch (err) {
     res.status(400).json(err);
   }
