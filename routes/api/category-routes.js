@@ -55,7 +55,6 @@ async function findCatById (id) {
   if (!category) {
     throw new Error(ERR_MESSAGES.CATEGORY_404);
   }
-
   return category;
 }
 

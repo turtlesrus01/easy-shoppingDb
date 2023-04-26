@@ -46,20 +46,7 @@ router.get('/:id', async (req, res) => {
   
   // find a single product by its `id`
   try {
-    const product = await findProdById(id, {
-      include: [
-        {
-          model: Category,
-          attributes: ['id', 'category_name']
-        },
-        {
-          model: Tag,
-          attributes: ['id', 'tag_name'],
-          through: ProductTag,
-          as: 'product_tags'
-        }
-      ]
-    });    
+    const product = await findProdById(id);    
     res.status(200).json(product)
   } catch (err) {
     console.error(err);
@@ -73,13 +60,23 @@ router.get('/:id', async (req, res) => {
 async function findProdById (id) {
   const product = await Product.findByPk(id, {
     //join with categories
-    include: [{model: Product, as: 'category_products'}]
+    include: [
+      {
+        model: Category,
+        attributes: ['id', 'category_name']
+      },
+      {
+        model: Tag,
+        attributes: ['id', 'tag_name'],
+        through: ProductTag,
+        as: 'product_tags'
+      }
+    ]
   });
-
+  //Error handler for a missing product
   if (!product) {
     throw new Error(ERR_MESSAGES.CATEGORY_404);
   }
-
   return product;
 }
 
