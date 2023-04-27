@@ -76,7 +76,7 @@ router.put('/:id', async (req, res) => {
   //validate id
   const id = parseInt(req.params.id, 10);
   if (isNaN(id)) {
-    return res.status(400).send(ERR_MESSAGES.INVALID);
+    return res.status(404).send(ERR_MESSAGES.INVALID);
   }
   // update a category by its `id` value
   try {
@@ -99,7 +99,7 @@ router.delete('/:id', async (req, res) => {
   //validate id
   const id = parseInt(req.params.id, 10);
   if (isNaN(id)) {
-    return res.status(400).send(ERR_MESSAGES.INVALID);
+    return res.status(404).send(ERR_MESSAGES.INVALID);
   }
 
   // delete a category by its `id` value
