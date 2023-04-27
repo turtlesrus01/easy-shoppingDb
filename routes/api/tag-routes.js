@@ -52,7 +52,7 @@ router.get('/:id', async (req, res) => {
 //function to carry out db query
 async function findTagById (id) {
   const tag = await Tag.findByPk(id, {
-    //join with categories
+    //join with products
     include: [
       {
         model: Product,
@@ -72,11 +72,11 @@ router.post('/', async (req, res) => {
   // create a new tag
   try {
     const tag = await Tag.create(req.body);
-    //validate if the category exists
+    //validate if the tag exists
     if (!tag) {
       throw new Error(ERR_MESSAGES.TAG_404);
     }
-    res.status(200).json(tag);
+    res.status(201).json(tag);
   } catch (err) {
     res.status(400).json(err);
   }
@@ -95,9 +95,9 @@ router.put('/:id', async (req, res) => {
         id: req.params.id
       }
     });
-    //validate if the category exists
+    //validate if the tag exists
     if (!tag) {
-      res.status(404).send(ERR_MESSAGES.TAG_404)
+      res.status(400).send(ERR_MESSAGES.TAG_404)
     }
     res.status(200).json(tag);
   } catch (err) {
@@ -118,9 +118,9 @@ router.delete('/:id', async (req, res) => {
         id: req.params.id
       }
     });
-    //validate if the category exists
+    //validate if the tag exists
     if (!tag) {
-      res.status(404).send(ERR_MESSAGES.TAG_404)
+      res.status(400).send(ERR_MESSAGES.TAG_404)
     }
     res.status(200).json({message: 'Tag successfully deleted.'});
   } catch (err) {

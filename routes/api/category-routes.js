@@ -66,7 +66,7 @@ router.post('/', async (req, res) => {
     if (!category) {
       throw new Error(ERR_MESSAGES.CATEGORY_404);
     }
-    res.status(200).json(category);
+    res.status(201).json(category);
   } catch (err) {
     res.status(400).json(err);
   }
