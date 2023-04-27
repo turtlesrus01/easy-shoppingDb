@@ -119,7 +119,7 @@ router.put('/:id', (req, res) => {
   if (isNaN(id)) {
     return res.status(404).send(ERR_MESSAGES.INVALID);
   }
-  
+
   // update product data
   Product.update(req.body, {
     where: {
@@ -169,14 +169,14 @@ router.delete('/:id', async (req, res) => {
 
   // delete one product by its `id` value
   try {
-    const category = await Product.destroy({
+    const product = await Product.destroy({
       where: {
         id: req.params.id
       }
     });
-    //validate if the category exists
-    if (!category) {
-      res.status(404).send(ERR_MESSAGES.CATEGORY_404)
+    //validate if the product exists
+    if (!product) {
+      res.status(404).send(ERR_MESSAGES.PRODUCT_404)
     }
     res.status(200).json({message: 'Product successfully deleted.'});
   } catch (err) {
